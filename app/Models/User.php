@@ -21,7 +21,26 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'icon_id',
     ];
+
+    // 1人のユーザーは多くのメッセージを送信できる
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // 1人のユーザーは多くのチャットルームに参加できる
+    public function chatRooms()
+    {
+        return $this->belongsToMany(ChatRoom::class, 'chat_room_users');
+    }
+
+    // ユーザーは1つのアイコンを持つ
+    public function icon()
+    {
+        return $this->belongsTo(UserIcon::class, 'icon_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
