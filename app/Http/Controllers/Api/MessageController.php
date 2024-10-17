@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
-    // 特定のチャットルームのメッセージを取得する
+    /*
+    *   特定のチャットルームのメッセージを取得する
+    */
     public function index($chatRoomId)
     {
         try{
@@ -36,9 +38,36 @@ class MessageController extends Controller
         
     }
 
+    /*
+    *   メッセージの保存処理
+    */
     public function store(Request $request)
     {
-        // メッセージの保存処理
+        // バリデーション
+        $validated = $request->validate([
+            'chat_room_id'  => 'required|exists:chat_rooms,id',
+            'message'       => 'required|string|max:500',
+        ]);
+
+        try{
+            // メッセージの作成
+            message = Message::create([
+                'chat_room_id'  => $validated['chat_room_id'],
+                'sender_id'     => Auth::id(),
+                'message'       => $validated['message'],
+            ]);
+
+            return response()->json([
+                'message' => 'Message sent successfully!',
+                'data'    => $message
+            ], 201);
+
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'Failed to send message',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show(string $id)
