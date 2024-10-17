@@ -13,7 +13,25 @@ class ChatRoomController extends Controller
 {
     public function index()
     {
-        // ログインユーザーが所属するチャットルームの一覧を返す
+        try {
+            // ログインしているユーザーを取得
+            $user = auth()->user();
+    
+            // ユーザーが参加しているチャットルームを取得
+            // with('users')のより、チャットに参加している他のユーザーも取得
+            $chatRooms = $user->chatRooms()->with('users')->get();
+    
+            return response()->json([
+                'message' => 'Chat rooms fetched successfully',
+                'chat_rooms' => $chatRooms
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch chat rooms',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // 新しいチャットルームを作成する
@@ -31,17 +49,21 @@ class ChatRoomController extends Controller
             DB::beginTransaction();
 
             // チャットルームの作成
+
+            // グループチャットなら入力された名前を設定
             $chatRoom = ChatRoom::create([
                 'room_name' => $validated['group_chat_flag'] ? $validated['room_name'] : null,
             ]);
 
             // チャットルームにユーザーを追加
             foreach ($validated['chat_user_ids'] as $chatUserId) {
-                ChatRoomUser::create([
-                    'chat_room_id' => $chatRoom->id,
-                    'user_id'      => $chatUserId,
-                ]);
+                $chatRoom->users()->attach($chatUserId);
             }
+            /*
+                attach / detach メソッド
+                中間テーブルへのデータ操作に便利
+                シンプルかつリレーションを明示的に利用
+            */
 
             DB::commit();
 
