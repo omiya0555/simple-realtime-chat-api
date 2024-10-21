@@ -21,9 +21,10 @@ class MessageController extends Controller
 
             // chatroom内のメッセージ取得、送信者情報付与
             $messages = Message::where('chat_room_id', $chatRoom->id)
-                ->with('sender')    // リレーションにより送信ユーザーも取得
+                ->with('sender') // リレーションにより送信ユーザーも取得
                 ->orderBy('created_at','asc')
                 ->get();
+
             return response()->json([
                 'chat_room'     => $chatRoom,
                 'messages'      => $messages
@@ -31,8 +32,8 @@ class MessageController extends Controller
 
         }catch(\Exceptoin $e){
             return response()->json([
-                'message' => 'Failed to fetch messages',
-                'error'   => $e->getMessage()
+                'message'       => 'Failed to fetch messages',
+                'error'         => $e->getMessage()
             ], 500);
         }
         
@@ -58,14 +59,14 @@ class MessageController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Message sent successfully!',
-                'data'    => $message
+                'message'       => 'Message sent successfully!',
+                'data'          => $message
             ], 201);
 
         }catch(\Exception $e){
             return response()->json([
-                'message' => 'Failed to send message',
-                'error'   => $e->getMessage()
+                'message'       => 'Failed to send message',
+                'error'         => $e->getMessage()
             ], 500);
         }
     }

@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class ChatRoomController extends Controller
 {
+
+    /*
+    *  ユーザーが参加しているチャットルームを取得
+    */
     public function index()
     {
         try {
@@ -18,23 +22,26 @@ class ChatRoomController extends Controller
             $user = auth()->user();
     
             // ユーザーが参加しているチャットルームを取得
-            // with('users')のより、チャットに参加している他のユーザーも取得
+            // with('users')により、チャットに参加している他のユーザーも取得
             $chatRooms = $user->chatRooms()->with('users')->get();
     
             return response()->json([
-                'message' => 'Chat rooms fetched successfully',
-                'chat_rooms' => $chatRooms
+                'message'       => 'Chat rooms fetched successfully',
+                'chat_rooms'    => $chatRooms
             ], 200);
     
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to fetch chat rooms',
-                'error' => $e->getMessage()
+                'message'       => 'Failed to fetch chat rooms',
+                'error'         => $e->getMessage()
             ], 500);
         }
     }
 
-    // 新しいチャットルームを作成する
+     
+    /*
+    *   新しいチャットルームを作成する
+    */
     public function store(Request $request)
     {
         // バリデーション
@@ -52,7 +59,7 @@ class ChatRoomController extends Controller
 
             // グループチャットなら入力された名前を設定
             $chatRoom = ChatRoom::create([
-                'room_name' => $validated['group_chat_flag'] ? $validated['room_name'] : null,
+                'room_name'     => $validated['group_chat_flag'] ? $validated['room_name'] : null,
             ]);
 
             // チャットルームにユーザーを追加
@@ -68,16 +75,16 @@ class ChatRoomController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'ChatRoom created successfully!',
-                'chat_room' => $chatRoom
+                'message'       => 'ChatRoom created successfully!',
+                'chat_room'     => $chatRoom
             ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json([
-                'message' => 'ChatRoom creation failed!',
-                'error'   => $e->getMessage()
+                'message'       => 'ChatRoom creation failed!',
+                'error'         => $e->getMessage()
             ], 500);
         }
     }

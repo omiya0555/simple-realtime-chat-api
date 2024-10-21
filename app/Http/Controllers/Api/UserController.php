@@ -8,21 +8,23 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    // 全ユーザーの取得
+    /*
+    *  全ユーザーの取得
+    */
     public function index()
     {
         try {
-            // ユーザーを取得
             // ユーザー数は５人で固定
             $users = User::all();
+
             return response()->json([
-                'users' => $users
+                'users'     => $users
             ], 200);
     
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to fetch users',
-                'error' => $e->getMessage()
+                'message'   => 'Failed to fetch users',
+                'error'     => $e->getMessage()
             ], 500);
         }
     }
