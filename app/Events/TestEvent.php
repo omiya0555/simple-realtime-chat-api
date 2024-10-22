@@ -14,12 +14,14 @@ class TestEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $message;
+
     /**
      * Create a new event instance.
      */
     public function __construct()
     {
-        //
+        $this->message = $message;
     }
 
     /**
@@ -29,8 +31,16 @@ class TestEvent
      */
     public function broadcastOn(): array
     {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        return new Channel('test-channel');
+    }
+
+    /**
+     * Get the broadcast name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'test-event';
     }
 }
